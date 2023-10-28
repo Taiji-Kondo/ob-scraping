@@ -25,9 +25,9 @@ type ChairType = {
   price: number
   condition: typeof CONDITION_RANK[keyof typeof CONDITION_RANK]
   inventory: number
-  createdAt: Date
-  updatedAt: Date
-  deletedAt: Date | null
+  createdAt?: Date
+  updatedAt?: Date
+  deletedAt?: Date | null
 }
 
 (async () => {
@@ -81,9 +81,6 @@ type ChairType = {
         price: Number(price.replace(/[^0-9]/g, '')),
         condition,
         inventory: Number(conditionAndInventory.replace(/[^0-9]/g, '')),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null
       }
     }) satisfies ChairType[]
 
@@ -99,9 +96,6 @@ type ChairType = {
       item.price,
       item.condition,
       item.inventory,
-      item.createdAt,
-      item.updatedAt,
-      item.deletedAt
     ]
   })
   const deleteIds = dbChairDataIds.filter((item) => !latestChairDataIds.includes(item))
@@ -110,7 +104,7 @@ type ChairType = {
   // insert data
   if (insertData.length > 0){
     connection.query(
-      `INSERT INTO chair_embody (id, name, store_name, price, \`condition\`, inventory, created_at, updated_at, deleted_at) VALUES ?`,
+      `INSERT INTO chair_embody (id, name, store_name, price, \`condition\`, inventory) VALUES ?`,
       [insertData]
     );
   }
@@ -135,9 +129,6 @@ const TEST_DATA = [
     price: 10000,
     condition: 1,
     inventory: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null
   },
   {
     id: 2,
@@ -157,9 +148,6 @@ const TEST_DATA = [
     price: 30000,
     condition: 3,
     inventory: 3,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null
   },
   {
     id: 4,
@@ -168,8 +156,5 @@ const TEST_DATA = [
     price: 40000,
     condition: 4,
     inventory: 4,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null
   }
 ]
