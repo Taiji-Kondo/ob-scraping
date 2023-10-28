@@ -4,5 +4,8 @@
   },
   "volta": {
     "node": "20.9.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
   }
 }
