@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "puppeteer": "^21.4.1"
+  },
+  "volta": {
+    "node": "20.9.0"
   }
 }
