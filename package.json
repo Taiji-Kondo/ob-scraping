@@ -1,11 +1,15 @@
 {
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
   "dependencies": {
     "puppeteer": "^21.4.1"
   },
-  "volta": {
-    "node": "20.9.0"
-  },
   "devDependencies": {
     "prettier": "^3.0.3"
+  },
+  "volta": {
+    "node": "20.9.0"
   }
 }
