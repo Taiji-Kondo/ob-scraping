@@ -142,7 +142,7 @@ const notifySlack = async (message: string) => {
   await browser.close();
 })();
 
-const TEST_DATA = [
+const TEST_DATA: ChairType[] = [
   {
     id: 1,
     name: 'name1',
