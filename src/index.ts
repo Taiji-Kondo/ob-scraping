@@ -9,6 +9,7 @@ import {RowDataPacket} from "mysql2";
  * - 定期実行処理作成
  * - テーブル作成のinitファイルを作成
  * - seedファイルを作成
+ * - ページネーション対応
  **/
 
 // init dotenv
