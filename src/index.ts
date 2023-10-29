@@ -30,6 +30,24 @@ type ChairType = {
   deletedAt?: Date | null
 }
 
+const notifySlack = async (message: string) => {
+  const url = process.env.SLACK_WEBHOOK_URL
+  if (!url) throw new Error('SLACK_WEBHOOK_URL is not set')
+
+  try {
+    const payload = {
+      text: message,
+    }
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  } catch (error) {
+    console.error(error)
+    throw new Error('failed to notify slack')
+  }
+}
+
 (async () => {
   // connect to db
   const connection = await mysql.createConnection({
@@ -115,6 +133,13 @@ type ChairType = {
       [deleteIds]
     );
   }
+
+  // notify slack
+  // TODO: スクレイピング時にURLを取得して、URLを通知する
+  const message = `新着商品が${insertData.length}件あります\n
+  ${insertData.map((item) => `id: ${item[0]}, price: ${item[3].toLocaleString()}円, inventory: ${item[4]}個, url: xxx`).join('\n')}`
+  console.log(message)
+  await notifySlack(message)
 
   // end connection
   connection.end();
