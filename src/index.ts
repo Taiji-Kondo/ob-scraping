@@ -3,6 +3,14 @@ import * as mysql from 'mysql2/promise';
 import dotenv from 'dotenv'
 import {RowDataPacket} from "mysql2";
 
+/**
+ * TODO:
+ * - URLを複数設定してmapで回す
+ * - 定期実行処理作成
+ * - テーブル作成のinitファイルを作成
+ * - seedファイルを作成
+ **/
+
 // init dotenv
 dotenv.config()
 
