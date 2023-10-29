@@ -8,22 +8,15 @@ dotenv.config()
 
 const EMBODY_CHAIR_URL =
   'https://www.officebusters.com/kensaku/index_k.php?st=&l=2&m=17&s=&k=&tenpo=&maker=28&condition_rank=4,5&color=1,4&amount=&kakaku_min=&kakaku_max=&dc=3&d_size=&h_size=&w_size=&tag_id=&series_id=2482&mrk=&f_func=&g_size=&cassette=&counter_num=&compound_machine_mono_per_minute=&compound_machine_color_per_minute=&launch_year=&view_mode=&pageNum_kensaku=1&cbl=&cbm=&cbs=&level=s';
-const CONDITION_RANK = {
-  'Ｓ': 1,
-  'Ａ': 2,
-  'Ｂ＋': 3,
-  'Ｂ': 4,
-  'Ｃ＋': 5,
-  'Ｃ': 6,
-  'Ｄ': 7,
-} as const
+const CONDITION_RANK = ['Ｓ', 'Ａ', 'Ｂ＋', 'Ｂ', 'Ｃ＋', 'Ｃ', 'Ｄ',] as const
 
 type ChairType = {
   id: number
   name: string
   storeName: string
+  url: string
   price: number
-  condition: typeof CONDITION_RANK[keyof typeof CONDITION_RANK]
+  condition: number
   inventory: number
   createdAt?: Date
   updatedAt?: Date
@@ -85,17 +78,19 @@ const notifySlack = async (message: string) => {
       const id = item.querySelector('p.result_detail_card_category-and-id_prod-id')?.textContent
       const name= item.querySelector('li.result_detail_card_series')?.textContent
       const storeName= item.querySelector('li.result_detail_card_tenpo')?.textContent
+      const url = item.querySelector('a[href]')?.getAttribute('href')
       const price= item.querySelector('li.result_detail_card_price')?.textContent
       const conditionAndInventory= item.querySelector('p.result_detail_card_bottom_state')?.textContent
-      if (!id || !name || !storeName || !price || !conditionAndInventory) throw new Error('result item not found');
+      if (!id || !name || !storeName || !url || !price || !conditionAndInventory) throw new Error('result item not found');
 
       const trimmedCondition = conditionAndInventory.replace('状態', '').replace('｜在庫数', '').replace(/[0-9]/g, '').trim()
-      const condition = CONDITION_RANK[trimmedCondition as keyof typeof CONDITION_RANK]
+      const condition = CONDITION_RANK.indexOf(trimmedCondition as typeof CONDITION_RANK[number])
 
       return {
         id: Number(id),
         name: name,
         storeName: storeName.trim(),
+        url: url,
         price: Number(price.replace(/[^0-9]/g, '')),
         condition,
         inventory: Number(conditionAndInventory.replace(/[^0-9]/g, '')),
@@ -111,6 +106,7 @@ const notifySlack = async (message: string) => {
       item.id,
       item.name,
       item.storeName,
+      item.url,
       item.price,
       item.condition,
       item.inventory,
@@ -122,7 +118,7 @@ const notifySlack = async (message: string) => {
   // insert data
   if (insertData.length > 0){
     connection.query(
-      `INSERT INTO chair_embody (id, name, store_name, price, \`condition\`, inventory) VALUES ?`,
+      `INSERT INTO chair_embody (id, name, store_name, url, price, \`condition\`, inventory) VALUES ?`,
       [insertData]
     );
   }
@@ -137,7 +133,7 @@ const notifySlack = async (message: string) => {
   // notify slack
   // TODO: スクレイピング時にURLを取得して、URLを通知する
   const message = `新着商品が${insertData.length}件あります\n
-  ${insertData.map((item) => `id: ${item[0]}, price: ${item[3].toLocaleString()}円, inventory: ${item[4]}個, url: xxx`).join('\n')}`
+  ${insertData.map((item) => `id: ${item[0]}, price: ${item[4].toLocaleString()}円, condition: ${CONDITION_RANK[item[5] as number]}, url: ${item[3]}`).join('\n')}`
   console.log(message)
   await notifySlack(message)
 
@@ -151,6 +147,7 @@ const TEST_DATA = [
     id: 1,
     name: 'name1',
     storeName: 'storeName1',
+    url: 'https://google.com',
     price: 10000,
     condition: 1,
     inventory: 1,
@@ -159,17 +156,16 @@ const TEST_DATA = [
     id: 2,
     name: 'name2',
     storeName: 'storeName2',
+    url: 'https://google.com',
     price: 20000,
     condition: 2,
     inventory: 2,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null
   },
   {
     id: 3,
     name: 'name3',
     storeName: 'storeName3',
+    url: 'https://google.com',
     price: 30000,
     condition: 3,
     inventory: 3,
@@ -178,6 +174,7 @@ const TEST_DATA = [
     id: 4,
     name: 'name4',
     storeName: 'storeName4',
+    url: 'https://google.com',
     price: 40000,
     condition: 4,
     inventory: 4,
