@@ -5,10 +5,10 @@ import {RowDataPacket} from "mysql2";
 
 /**
  * TODO:
- * - 定期実行処理作成
  * - テーブル作成のinitファイルを作成
  * - seedファイルを作成
  * - ページネーション対応
+ * - refactoring
  **/
 
 // init dotenv
@@ -65,7 +65,7 @@ const notifySlack = async (message: string) => {
   }
 }
 
-(async () => {
+const task = async () => {
   // connect to db
   const connection = await mysql.createConnection({
     host: process.env.DB_ROOT_HOST,
@@ -168,7 +168,13 @@ const notifySlack = async (message: string) => {
   // end connection
   connection.end();
   await browser.close();
-})();
+}
+
+// schedule task
+task().then(() => {
+  const intervalTime = 1000 * 60 * 60 * 4 // 4 hours
+  setInterval(task, intervalTime)
+})
 
 const TEST_DATA: ChairType[] = [
   {
