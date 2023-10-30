@@ -74,8 +74,7 @@ const task = async () => {
     database: process.env.DB_DATABASE,
   });
 
-  // const browser = await puppeteer.launch({ headless: true });
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   const messages: string[] = []
@@ -172,6 +171,7 @@ const task = async () => {
 
 // schedule task
 task().then(() => {
-  const intervalTime = 1000 * 60 * 60 * 4 // 4 hours
-  setInterval(task, intervalTime)
+  console.log('task finished')
+  // const intervalTime = 1000 * 60 * 60 * 4 // 4 hours
+  // setInterval(task, intervalTime)
 })
